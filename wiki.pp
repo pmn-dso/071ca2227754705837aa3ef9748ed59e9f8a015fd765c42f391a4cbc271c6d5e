@@ -34,3 +34,10 @@ exec {
     creates => '/usr/src/dokuwiki',
     path    => ['/usr/bin', '/usr/sbin',],
 }
+
+file {
+  'deplacement de dokuwiki':
+    ensure => 'present',
+    source => '/usr/src/dokuwiki-2020-07-29',
+    path   => '/usr/src/dokuwiki';
+}
