@@ -11,11 +11,19 @@ package {
 
 # Étape 3
 
-exec { 
-  'wget-dokuwiki':
-    cwd     => '/usr/src',
-    command => '/usr/bin/wget -O /usr/src/dokuwiki.tgz https://download.dokuwiki.org/src/dokuwiki/dokuwiki-stable.tgz';
+file { 
+  '/usr/src/dokuwiki.tgz':
+    ensure         => 'present',
+    source         => 'https://download.dokuwiki.org/src/dokuwiki/dokuwiki-stable.tgz',
+    path           => '/usr/src/dokuwiki.tgz',
+    checksum_value => '8867b6a5d71ecb5203402fe5e8fa18c9',
 }
+
+#exec { 
+#  'wget-dokuwiki':
+#    cwd     => '/usr/src',
+#    command => '/usr/bin/wget -O /usr/src/dokuwiki.tgz https://download.dokuwiki.org/src/dokuwiki/dokuwiki-stable.tgz';
+#}
 
 # Étape 4
 
