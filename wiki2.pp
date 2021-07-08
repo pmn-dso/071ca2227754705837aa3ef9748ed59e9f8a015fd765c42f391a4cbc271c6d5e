@@ -7,7 +7,6 @@ exec { 'apt-update':
 package { 
   
   'php7.3':
-    require => Exec['apt-update'],
     ensure  => 'installed';
 
   'apache2':
@@ -44,8 +43,7 @@ exec { 'deplacement de dokuwiki':
 # Création vhost apache2 &&  Copie de dokuwiki dans les vhosts correspondant
 
 file { '/var/www/politique':
-  #before  => Exec['copie-dokuwiki'],
-  ensure  => 'directory',
+  ensure  => 'present',
   owner   => 'www-data',
   group   => 'www-data',
   mode    => '0755',
@@ -55,7 +53,6 @@ file { '/var/www/politique':
 }
 
 file { '/var/www/recettes':
-  #before  => Exec['copie-dokuwiki'],
   ensure  => 'present',
   owner   => 'www-data',
   group   => 'www-data',
@@ -90,14 +87,23 @@ exec { 'conf-vhost':
 }
 
 exec { 'link-vhost':
+  require => Exec['conf-vhost'],
   command => 'ln -s /var/www/politique/politique.conf /etc/apache2/sites-available/politique.conf && ln -s /var/www/recettes/recettes.conf /etc/apache2/sites-available/recettes.conf',
   path    => ['/usr/bin', '/usr/sbin',];
 }
 
-exec { 'activation-vhost':
-  command => 'a2ensite recettes && a2ensite politique',
+exec { 'activation-vhost-politique':
+  require => Exec['link-vhost'],
+  command => 'a2ensite politique',
   path    => ['/usr/bin', '/usr/sbin',],
-  notify => Service[apache2]
+  notify => Service['apache2']
+}
+
+exec { 'activation-vhost-recettes':
+  require => Exec['link-vhost'],
+  command => 'a2ensite recettes',
+  path    => ['/usr/bin', '/usr/sbin',],
+  notify => Service['apache2']
 }
 
 service { 'apache2':
