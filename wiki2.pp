@@ -15,8 +15,6 @@ package {
 
 }
 
-
-
 # Téléchargement de l'archive dokuwiki.tgz
 
 file { '/usr/src/dokuwiki.tgz':
