@@ -43,7 +43,7 @@ exec { 'deplacement de dokuwiki':
     path    => ['/usr/bin', '/usr/sbin',],
 }
 
-# Création vhost apache2
+# Création vhost apache2 &&  Copie de dokuwiki dans les vhosts correspondant
 
 file { '/var/www/politique':
   #before  => Exec['copie-dokuwiki'],
@@ -66,21 +66,6 @@ file { '/var/www/recettes':
   path    => '/var/www/recettes',
   recurse => true;
 }
-
-# Copie de dokuwiki dans les vhosts correspondant
-
-#exec { 'copie-dokuwiki':
-#    before  => Exec['droits-dokuwiki'],
-#    cwd     => '/usr/src/',
-#    command => 'rsync -a dokuwiki/ /var/www/politique && rsync -a dokuwiki/ /var/www/recettes',
-#    path    => ['/usr/bin', '/usr/sbin',],
-#}
-
-# Modification user:group
-#exec { 'droits-dokuwiki':
-#    command => 'chown -R www-data:www-data /var/www/politique && chown -R www-data:www-data /var/www/politique',
-#    path    => ['/usr/bin', '/usr/sbin',],
-#}
 
 # Config vhost
 
@@ -110,7 +95,6 @@ exec { 'link-vhost':
   command => 'ln -s /var/www/politique/politique.conf /etc/apache2/sites-available/politique.conf && ln -s /var/www/recettes/recettes.conf /etc/apache2/sites-available/recettes.conf',
   path    => ['/usr/bin', '/usr/sbin',];
 }
-
 
 exec { 'activation-vhost':
   command => 'a2ensite recettes && a2ensite politique',
