@@ -38,7 +38,7 @@ class dokuwiki {
   exec { 'deplacement de dokuwiki':
     require => Exec['extraction-dokuwiki'],
     cwd     => '/usr/src/',
-    ommand => 'mv dokuwiki-2020-07-29/ dokuwiki',
+    command => 'mv dokuwiki-2020-07-29/ dokuwiki',
     path    => ['/usr/bin', '/usr/sbin',],
   }
 }
