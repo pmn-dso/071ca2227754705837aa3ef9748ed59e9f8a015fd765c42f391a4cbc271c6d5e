@@ -73,6 +73,7 @@ class wiki($site_name) {
 node 'server0' {
   class { 'wiki':
     site_name => 'politique',
+    site_name => 'tajineworld',
   }
   include hosting
   include dokuwiki
