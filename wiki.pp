@@ -65,9 +65,6 @@ class wiki($site_name) {
     path    => ['/usr/bin', '/usr/sbin',],
     notify => Service['apache2']
   }
-}
-
-class vhost {
   service { 'apache2':
     ensure => running;
   }
@@ -80,7 +77,6 @@ node 'server0' {
   include hosting
   include dokuwiki
   include wiki
-  include vhost
 }
 
 node 'server1' {
@@ -90,6 +86,5 @@ node 'server1' {
   include hosting
   include dokuwiki
   include wiki
-  include vhost
 }
 
