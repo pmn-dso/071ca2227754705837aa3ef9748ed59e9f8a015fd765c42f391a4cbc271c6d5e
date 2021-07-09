@@ -111,7 +111,7 @@ class recettes {
   }
   exec { 'link-vhost':
     require => Exec['conf-vhost'],
-    command => '  ln -s /var/www/recettes/recettes.conf /etc/apache2/sites-available/recettes.conf',
+    command => 'ln -s /var/www/recettes/recettes.conf /etc/apache2/sites-available/recettes.conf',
     path    => ['/usr/bin', '/usr/sbin',];
   }
 }
