@@ -1,15 +1,3 @@
-
-class development {
-  package {
-    'vim':
-      ensure =>  installed;
-    'make':
-      ensure =>  installed;
-    'gcc':
-      ensure =>  installed;
-  }
-}
-
 class hosting {
   package {
     'apache2':
@@ -35,7 +23,7 @@ class dokuwiki {
     path    => ['/usr/bin', '/usr/sbin',],
   }
 
-  exec { 'deplacement de dokuwiki':
+  exec { 'deplacement-dokuwiki':
     require => Exec['extraction-dokuwiki'],
     cwd     => '/usr/src/',
     command => 'mv dokuwiki-2020-07-29/ dokuwiki',
@@ -45,6 +33,7 @@ class dokuwiki {
 
 class wiki($site_name) {
   file { "/var/www/${site_name}":
+    require => Exec['deplacement-dokuwiki'],
     ensure  => 'present',
     owner   => 'www-data',
     group   => 'www-data',
@@ -54,20 +43,14 @@ class wiki($site_name) {
     recurse => true;
   }
   file { "copie-conf-vhost-${site_name}":
-    before  => Exec['conf-vhost'],
     ensure  => 'present',
     owner   => 'www-data',
     group   => 'www-data',
     source  => '/etc/apache2/sites-available/000-default.conf',
     path    => "/var/www/${site_name}/${site_name}.conf";
   }
-  exec { "activation-vhost-${site_name}":
-    require => Exec['link-vhost'],
-    command => "a2ensite ${site_name}",
-    path    => ['/usr/bin', '/usr/sbin',],
-    notify => Service['apache2']
-  }
   exec { 'conf-vhost':
+    require => File["copie-conf-vhost-${site_name}"],
     command => "sed -i \'s/html/${site_name}/g\' /var/www/${site_name}/${site_name}.conf && sed -i \'s/#ServerName www.example.com/ServerName ${site_name}.wiki/g\' /var/www/${site_name}/${site_name}.conf",
     path    => ['/usr/bin', '/usr/sbin',];
   }
@@ -76,16 +59,18 @@ class wiki($site_name) {
     command => "ln -s /var/www/${site_name}/${site_name}.conf /etc/apache2/sites-available/${site_name}.conf",
     path    => ['/usr/bin', '/usr/sbin',];
   }
+  exec { "activation-vhost-${site_name}":
+    require => Exec['link-vhost'],
+    command => "a2ensite ${site_name}",
+    path    => ['/usr/bin', '/usr/sbin',],
+    notify => Service['apache2']
+  }
 }
 
 class vhost {
   service { 'apache2':
     ensure => running;
   }
-}
-
-node 'control' {
-  include development
 }
 
 node 'server0' {
