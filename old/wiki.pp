@@ -43,7 +43,7 @@ class dokuwiki {
   }
 }
 $site_name = 'politique'
-class wiki {
+class politique {
   file { '/var/www/"${site_name}"':
     ensure  => 'present',
     owner   => 'www-data',
