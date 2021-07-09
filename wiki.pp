@@ -67,21 +67,14 @@ class politique {
     path    => ['/usr/bin', '/usr/sbin',],
     notify => Service['apache2']
   }
-}
-
-class vhost {
   exec { 'conf-vhost':
-    command => 'sed -i \'s/html/politique/g\' /var/www/politique/politique.conf && sed -i \'s/#ServerName www.example.com/ServerName politique.wiki/g\' /var/www/politique/politique.conf && sed -i \'s/html/recettes/g\' /var/www/recettes/recettes.conf && sed -i \'s/#ServerName www.example.com/ServerName recettes.wiki/g\' /var/www/recettes/recettes.conf',
+    command => 'sed -i \'s/html/politique/g\' /var/www/politique/politique.conf && sed -i \'s/#ServerName www.example.com/ServerName politique.wiki/g\' /var/www/politique/politique.conf',
     path    => ['/usr/bin', '/usr/sbin',];
   }
-
   exec { 'link-vhost':
     require => Exec['conf-vhost'],
-    command => 'ln -s /var/www/politique/politique.conf /etc/apache2/sites-available/politique.conf && ln -s /var/www/recettes/recettes.conf /etc/apache2/sites-available/recettes.conf',
+    command => 'ln -s /var/www/politique/politique.conf /etc/apache2/sites-available/politique.conf',
     path    => ['/usr/bin', '/usr/sbin',];
-  }
-  service { 'apache2':
-    ensure => running;
   }
 }
 
@@ -110,6 +103,22 @@ class recettes {
     command => 'a2ensite recettes',
     path    => ['/usr/bin', '/usr/sbin',],
     notify => Service['apache2']
+  }
+
+  exec { 'conf-vhost':
+    command => 'sed -i \'s/html/recettes/g\' /var/www/recettes/recettes.conf && sed -i \'s/#ServerName www.example.com/ServerName recettes.wiki/g\' /var/www/recettes/recettes.conf',
+    path    => ['/usr/bin', '/usr/sbin',];
+  }
+  exec { 'link-vhost':
+    require => Exec['conf-vhost'],
+    command => '  ln -s /var/www/recettes/recettes.conf /etc/apache2/sites-available/recettes.conf',
+    path    => ['/usr/bin', '/usr/sbin',];
+  }
+}
+
+class vhost {
+  service { 'apache2':
+    ensure => running;
   }
 }
 
