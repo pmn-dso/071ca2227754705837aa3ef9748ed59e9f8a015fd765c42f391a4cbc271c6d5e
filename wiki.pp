@@ -43,7 +43,7 @@ class dokuwiki {
   }
 }
 
-class wiki {
+class wiki($site_name) {
   file { "/var/www/${site_name}":
     ensure  => 'present',
     owner   => 'www-data',
@@ -68,7 +68,7 @@ class wiki {
     notify => Service['apache2']
   }
   exec { 'conf-vhost':
-    command => "sed -i 's/html/${site_name}/g' /var/www/${site_name}/${site_name}.conf && sed -i 's/#ServerName www.example.com/ServerName ${site_name}.wiki/g' /var/www/${site_name}/${site_name}.conf",
+    command => "sed -i \'s/html/${site_name}/g\' /var/www/${site_name}/${site_name}.conf && sed -i \'s/#ServerName www.example.com/ServerName ${site_name}.wiki/g\' /var/www/${site_name}/${site_name}.conf",
     path    => ['/usr/bin', '/usr/sbin',];
   }
   exec { 'link-vhost':
@@ -89,7 +89,9 @@ node 'control' {
 }
 
 node 'server0' {
-  $site_name = ['politique']
+  class { 'wiki':
+    site_name => 'politique',
+  }
   include hosting
   include dokuwiki
   include wiki
@@ -97,7 +99,9 @@ node 'server0' {
 }
 
 node 'server1' {
-  $site_name = ['recettes']
+  class { 'wiki':
+    site_name => 'recettes',
+  }
   include hosting
   include dokuwiki
   include wiki
