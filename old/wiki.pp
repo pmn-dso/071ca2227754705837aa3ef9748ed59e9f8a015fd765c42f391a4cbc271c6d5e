@@ -42,76 +42,38 @@ class dokuwiki {
     path    => ['/usr/bin', '/usr/sbin',],
   }
 }
-$site_name = 'politique'
-class politique {
+
+class wiki {
   file { '/var/www/"${site_name}"':
     ensure  => 'present',
     owner   => 'www-data',
     group   => 'www-data',
     mode    => '0755',
     source  => '/usr/src/dokuwiki/',
-    path    => '/var/www/politique',
+    path    => '/var/www/"${site_name}"',
     recurse => true;
   }
-  file { 'copie-conf-vhost-politique':
+  file { 'copie-conf-vhost-"${site_name}"':
     before  => Exec['conf-vhost'],
     ensure  => 'present',
     owner   => 'www-data',
     group   => 'www-data',
     source  => '/etc/apache2/sites-available/000-default.conf',
-    path    => '/var/www/politique/politique.conf';
+    path    => '/var/www/"${site_name}"/"${site_name}".conf';
   }
-  exec { 'activation-vhost-politique':
+  exec { 'activation-vhost-"${site_name}"':
     require => Exec['link-vhost'],
-    command => 'a2ensite politique',
+    command => 'a2ensite "${site_name}"',
     path    => ['/usr/bin', '/usr/sbin',],
     notify => Service['apache2']
   }
   exec { 'conf-vhost':
-    command => 'sed -i \'s/html/politique/g\' /var/www/politique/politique.conf && sed -i \'s/#ServerName www.example.com/ServerName politique.wiki/g\' /var/www/politique/politique.conf',
+    command => 'sed -i \'s/html/"${site_name}"/g\' /var/www/"${site_name}"/"${site_name}".conf && sed -i \'s/#ServerName www.example.com/ServerName "${site_name}".wiki/g\' /var/www/"${site_name}"/"${site_name}".conf',
     path    => ['/usr/bin', '/usr/sbin',];
   }
   exec { 'link-vhost':
     require => Exec['conf-vhost'],
-    command => 'ln -s /var/www/politique/politique.conf /etc/apache2/sites-available/politique.conf',
-    path    => ['/usr/bin', '/usr/sbin',];
-  }
-}
-
-class recettes {
-  file { '/var/www/recettes':
-    ensure  => 'present',
-    owner   => 'www-data',
-    group   => 'www-data',
-    mode    => '0755',
-    source  => '/usr/src/dokuwiki/',
-    path    => '/var/www/recettes',
-    recurse => true;
-  }
-
-  file { 'copie-conf-vhost-recettes':
-    before  => Exec['conf-vhost'],
-    ensure  => 'present',
-    owner   => 'www-data',
-    group   => 'www-data',
-    source  => '/etc/apache2/sites-available/000-default.conf',
-    path    => '/var/www/recettes/recettes.conf';
-  }
-
-  exec { 'activation-vhost-recettes':
-    require => Exec['link-vhost'],
-    command => 'a2ensite recettes',
-    path    => ['/usr/bin', '/usr/sbin',],
-    notify => Service['apache2']
-  }
-
-  exec { 'conf-vhost':
-    command => 'sed -i \'s/html/recettes/g\' /var/www/recettes/recettes.conf && sed -i \'s/#ServerName www.example.com/ServerName recettes.wiki/g\' /var/www/recettes/recettes.conf',
-    path    => ['/usr/bin', '/usr/sbin',];
-  }
-  exec { 'link-vhost':
-    require => Exec['conf-vhost'],
-    command => 'ln -s /var/www/recettes/recettes.conf /etc/apache2/sites-available/recettes.conf',
+    command => 'ln -s /var/www/"${site_name}"/"${site_name}".conf /etc/apache2/sites-available/"${site_name}".conf',
     path    => ['/usr/bin', '/usr/sbin',];
   }
 }
@@ -127,16 +89,18 @@ node 'control' {
 }
 
 node 'server0' {
+  $site_name = ['politique']
   include hosting
   include dokuwiki
-  include politique
+  include wiki
   include vhost
 }
 
 node 'server1' {
+  $site_name = ['recettes']
   include hosting
   include dokuwiki
-  include recettes
+  include wiki
   include vhost
 }
 
