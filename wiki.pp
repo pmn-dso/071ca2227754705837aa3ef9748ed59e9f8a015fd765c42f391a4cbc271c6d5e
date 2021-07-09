@@ -5,6 +5,9 @@ class hosting {
     'php7.3':
       ensure =>  installed;
   }
+  service { 'apache2':
+    ensure => running;
+  }
 }
 
 class dokuwiki {
@@ -64,9 +67,6 @@ class wiki($site_name) {
     command => "a2ensite ${site_name}",
     path    => ['/usr/bin', '/usr/sbin',],
     notify => Service['apache2']
-  }
-  service { 'apache2':
-    ensure => running;
   }
 }
 
