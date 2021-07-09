@@ -93,7 +93,7 @@ node 'server0' {
 
   dokuwiki::site {
     'siteA':
-      site_name => 'politique-wiki',
+      site_name => 'politique.wiki',
       site_dns  => 'politique.wiki';
 
     'siteB':
@@ -107,7 +107,7 @@ node 'server1' {
 
   dokuwiki::site {
     'recettes':
-      site_name => 'recettes-wiki',
+      site_name => 'recettes.wiki',
       site_dns  => 'recettes.wiki';
   }
 }
