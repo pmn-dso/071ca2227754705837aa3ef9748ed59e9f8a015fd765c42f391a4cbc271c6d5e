@@ -95,7 +95,7 @@ class recettes {
     path    => '/var/www/recettes',
     recurse => true;
   }
-  
+
   file { 'copie-conf-vhost-recettes':
     before  => Exec['conf-vhost'],
     ensure  => 'present',
@@ -120,10 +120,14 @@ node 'control' {
 node 'server0' {
   include hosting
   include dokuwiki
+  include politique
+  include vhost
 }
 
 node 'server1' {
   include hosting
   include dokuwiki
+  include recettes
+  include vhost
 }
 
